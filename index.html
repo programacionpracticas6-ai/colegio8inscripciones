@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colegio Provincial N° 8 - Sistema de Inscripción Local MySQL</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root { --p8-green: #0d5c3a; --p8-gold: #c5a059; --p8-dark: #1e293b; }
+        body { background-color: #f8fafc; font-family: 'Segoe UI', system-ui, sans-serif; color: #334155; }
+        .header-institutional { background: linear-gradient(135deg, var(--p8-green), #063c24); color: white; border-bottom: 4px solid var(--p8-gold); }
+        .card-custom { border: none; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+        .btn-p8 { background-color: var(--p8-green); color: white; border-radius: 6px; font-weight: 600; }
+        .btn-p8:hover { background-color: #08432a; color: white; }
+        .badge-status { font-size: 0.85rem; padding: 6px 12px; border-radius: 20px; }
+    </style>
+</head>
+<body>
+
+    <header class="header-institutional py-4 mb-4">
+        <div class="container d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-3">
+                <i class="fa-solid fa-graduation-cap fa-3x text-warning"></i>
+                <div>
+                    <h2 class="m-0 fw-bold">COLEGIO PROVINCIAL N° 8</h2>
+                    <p class="m-0 text-white-50 small">Sistema Oficial de Matriculación (Base de Datos Local MySQL)</p>
+                </div>
+            </div>
+            <button class="btn btn-outline-light btn-sm" onclick="toggleView()">
+                <i class="fa-solid fa-user-shield me-1"></i> <span id="viewBtnText">Panel de Secretaría</span>
+            </button>
+        </div>
+    </header>
+
+    <div class="container mb-5">
+        
+        <!-- VISTA FORMULARIO DE INSCRIPCIÓN -->
+        <div id="sectionForm">
+            <div class="card card-custom p-4">
+                <h4 class="fw-bold text-success mb-3"><i class="fa-solid fa-file-signature me-2"></i> Formulario General de Inscripción 2026</h4>
+                <form id="formInscripcion">
+                    
+                    <h5 class="mt-3 text-secondary border-bottom pb-2"><i class="fa-solid fa-user-graduate me-2"></i> Datos del Estudiante</h5>
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">DNI *</label>
+                            <input type="text" name="estudiante_dni" class="form-control" required placeholder="Ej: 50123456">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">CUIL</label>
+                            <input type="text" name="estudiante_cuil" class="form-control" placeholder="Ej: 20501234568">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Apellido(s) *</label>
+                            <input type="text" name="estudiante_apellido" class="form-control" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Nombre(s) *</label>
+                            <input type="text" name="estudiante_nombre" class="form-control" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Fecha Nacimiento *</label>
+                            <input type="date" name="estudiante_fecha_nacimiento" class="form-control" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Género *</label>
+                            <select name="estudiante_genero" class="form-select" required>
+                                <option value="MASCULINO">Masculino</option>
+                                <option value="FEMENINO">Femenino</option>
+                                <option value="X">X / No Binario</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Obra Social</label>
+                            <input type="text" name="estudiante_obra_social" class="form-control" placeholder="Ej: APOS, OSDE, Ninguna">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Observaciones Médicas</label>
+                            <input type="text" name="estudiante_observaciones_medicas" class="form-control" placeholder="Alergias, asma, etc.">
+                        </div>
+                    </div>
+
+                    <h5 class="mt-4 text-secondary border-bottom pb-2"><i class="fa-solid fa-users me-2"></i> Datos del Tutor Legal</h5>
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <label class="form-label">DNI Tutor *</label>
+                            <input type="text" name="tutor_dni" class="form-control" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Apellido Tutor *</label>
+                            <input type="text" name="tutor_apellido" class="form-control" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Nombre Tutor *</label>
+                            <input type="text" name="tutor_nombre" class="form-control" required>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Parentesco *</label>
+                            <select name="tutor_parentesco" class="form-select" required>
+                                <option value="PADRE">Padre</option>
+                                <option value="MADRE">Madre</option>
+                                <option value="TUTOR_LEGAL">Tutor Legal</option>
+                                <option value="OTRO">Otro</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Teléfono Principal *</label>
+                            <input type="tel" name="tutor_telefono" class="form-control" required placeholder="Ej: 3804123456">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="tutor_email" class="form-control">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Calle y Número *</label>
+                            <input type="text" name="tutor_calle" class="form-control" required placeholder="Ej: Av. San Francisco 1250">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Barrio *</label>
+                            <input type="text" name="tutor_barrio" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <h5 class="mt-4 text-secondary border-bottom pb-2"><i class="fa-solid fa-school me-2"></i> Inscripción Académica</h5>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Año a Cursar *</label>
+                            <select name="anio_estudio" class="form-select" required>
+                                <option value="1ER_ANIO">1° Año (Ciclo Básico)</option>
+                                <option value="2DO_ANIO">2° Año (Ciclo Básico)</option>
+                                <option value="3ER_ANIO">3° Año (Ciclo Básico)</option>
+                                <option value="4TO_ANIO">4° Año (Orientado)</option>
+                                <option value="5TO_ANIO">5° Año (Orientado)</option>
+                                <option value="6TO_ANIO">6° Año (Orientado)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Turno de Preferencia *</label>
+                            <select name="turno" class="form-select" required>
+                                <option value="MANANA">Mañana</option>
+                                <option value="TARDE">Tarde</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Tipo de Solicitud *</label>
+                            <select name="tipo_inscripcion" class="form-select" required>
+                                <option value="INGRESO_1ER_ANIO">Ingreso a 1° Año</option>
+                                <option value="REINSCRIPCION">Reinscripción / Alumno Regular</option>
+                                <option value="PASE_OTRO_COLEGIO">Pase de otro colegio</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <h5 class="mt-4 text-secondary border-bottom pb-2"><i class="fa-solid fa-file-check me-2"></i> Documentación Presentada</h5>
+                    <div class="row g-3">
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="doc_dni_alumno" id="doc1" value="1">
+                                <label class="form-check-label" for="doc1">Fotocopia DNI Alumno</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="doc_dni_tutor" id="doc2" value="1">
+                                <label class="form-check-label" for="doc2">Fotocopia DNI Tutor</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="doc_partida" id="doc3" value="1">
+                                <label class="form-check-label" for="doc3">Partida de Nacimiento</label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="doc_certificado" id="doc4" value="1">
+                                <label class="form-check-label" for="doc4">Certificado 7° o Pase</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 text-end">
+                        <button type="submit" class="btn btn-p8 btn-lg px-5">
+                            <i class="fa-solid fa-paper-plane me-2"></i> Registrar Inscripción en MySQL
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- VISTA PANEL ADMIN / SECRETARÍA -->
+        <div id="sectionAdmin" style="display:none;">
+            <div class="card card-custom p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="fw-bold text-success m-0"><i class="fa-solid fa-folder-open me-2"></i> Registros de Inscripción en MySQL</h4>
+                    <button class="btn btn-outline-success btn-sm" onclick="cargarInscripciones()">
+                        <i class="fa-solid fa-rotate me-1"></i> Actualizar Tabla
+                    </button>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Expediente</th>
+                                <th>Estudiante</th>
+                                <th>DNI Estudiante</th>
+                                <th>Año / Turno</th>
+                                <th>Tutor y Contacto</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaInscripciones">
+                            <tr>
+                                <td colspan="8" class="text-center text-muted py-4">Cargando registros...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Modal Respuesta -->
+    <div class="modal fade" id="modalRespuesta" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-header-title"><i class="fa-solid fa-circle-check me-2"></i> Registro Guardado</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center py-4">
+                    <p class="fs-5 text-muted mb-1">N° de Expediente Asignado:</p>
+                    <h2 class="text-success fw-bold" id="expedienteModal">EXP-XXXX-XXXXX</h2>
+                    <p class="text-secondary small mt-3">Los datos se guardaron exitosamente en la base de datos MySQL local.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const form = document.getElementById('formInscripcion');
+        const modalRespuesta = new bootstrap.Modal(document.getElementById('modalRespuesta'));
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const formData = new FormData(form);
+            const data = {};
+            formData.forEach((val, key) => data[key] = val);
+
+            try {
+                const res = await fetch('../api/guardar_inscripcion.php', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+                
+                if (result.status === 'success') {
+                    document.getElementById('expedienteModal').innerText = result.expediente;
+                    modalRespuesta.show();
+                    form.reset();
+                    cargarInscripciones();
+                } else {
+                    alert('Error: ' + result.message);
+                }
+            } catch (err) {
+                alert('Error al conectar con la API PHP/MySQL: ' + err.message);
+            }
+        });
+
+        async function cargarInscripciones() {
+            try {
+                const res = await fetch('../api/listar_inscripciones.php');
+                const result = await res.json();
+                const tbody = document.getElementById('tablaInscripciones');
+                tbody.innerHTML = '';
+
+                if (!result.data || result.data.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="8" class="text-center text-muted">No hay inscripciones registradas en la BD local.</td></tr>';
+                    return;
+                }
+
+                result.data.forEach(item => {
+                    const badgeClass = item.estado_solicitud === 'CONFIRMADA' ? 'bg-success' : (item.estado_solicitud === 'RECHAZADA' ? 'bg-danger' : 'bg-warning text-dark');
+                    tbody.innerHTML += `
+                        <tr>
+                            <td class="fw-bold">${item.numero_expediente}</td>
+                            <td>${item.estudiante_nombre_completo}</td>
+                            <td>${item.estudiante_dni}</td>
+                            <td>${item.anio_estudio} (${item.turno})</td>
+                            <td>${item.tutor_nombre_completo}<br><small class="text-muted">${item.tutor_telefono}</small></td>
+                            <td><small>${item.fecha_solicitud.substring(0, 10)}</small></td>
+                            <td><span class="badge ${badgeClass} badge-status">${item.estado_solicitud}</span></td>
+                            <td>
+                                <select class="form-select form-select-sm" onchange="cambiarEstado(${item.id_solicitud}, this.value)">
+                                    <option value="PENDIENTE" ${item.estado_solicitud==='PENDIENTE'?'selected':''}>Pendiente</option>
+                                    <option value="CONFIRMADA" ${item.estado_solicitud==='CONFIRMADA'?'selected':''}>Confirmar</option>
+                                    <option value="RECHAZADA" ${item.estado_solicitud==='RECHAZADA'?'selected':''}>Rechazar</option>
+                                </select>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } catch (err) {
+                console.error('Error cargando tabla:', err);
+            }
+        }
+
+        async function cambiarEstado(id, nuevoEstado) {
+            await fetch('../api/cambiar_estado.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_solicitud: id, nuevo_estado: nuevoEstado })
+            });
+            cargarInscripciones();
+        }
+
+        function toggleView() {
+            const f = document.getElementById('sectionForm');
+            const a = document.getElementById('sectionAdmin');
+            const btnText = document.getElementById('viewBtnText');
+            if (f.style.display === 'none') {
+                f.style.display = 'block';
+                a.style.display = 'none';
+                btnText.innerText = 'Panel de Secretaría';
+            } else {
+                f.style.display = 'none';
+                a.style.display = 'block';
+                btnText.innerText = 'Formulario Inscripción';
+                cargarInscripciones();
+            }
+        }
+    </script>
+</body>
+</html>
